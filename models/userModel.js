@@ -27,7 +27,14 @@ const userSchema = new mongoose.Schema({
     createdAt: {
         type: Date,
         default: Date.now(),
+        select: false,
     },
+    friends: [
+        {
+            type: mongoose.Schema.ObjectId,
+            ref: "User",
+        },
+    ],
 });
 
 //Password encryption ------------------------------------------>
@@ -45,6 +52,12 @@ userSchema.pre("save", async function (next) {
 userSchema.methods.checkPassword = async function (candidatePassword, userPassword) {
     return await bcrypt.compare(candidatePassword, userPassword);
 };
+
+//selecting fields to be returned ------------------------------>
+userSchema.pre(/^find/, function (next) {
+    this.select("-__v ");
+    next();
+});
 
 //User model -------------------------------------------------->
 const User = mongoose.model("User", userSchema);
