@@ -2,6 +2,9 @@
 const express = require("express");
 const cors = require("cors");
 
+//routes imports ---------------------------------------------->
+const authRouter = require("./routes/authRouter");
+
 //initialize app ---------------------------------------------->
 const app = express();
 
@@ -10,9 +13,7 @@ app.use(express.json());
 app.use(cors());
 
 //routes ------------------------------------------------------>
-app.route("/").get((req, res) => {
-    res.send("Hello World");
-});
+app.use("/auth", authRouter);
 
 //Export app -------------------------------------------------->
 module.exports = app;
