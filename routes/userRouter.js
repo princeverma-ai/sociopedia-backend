@@ -2,6 +2,7 @@
 const authController = require("../controllers/authController");
 const userController = require("../controllers/userController");
 const friendController = require("../controllers/friendController");
+const singleImageMiddleware = require("../utils/uploadMulter");
 
 const express = require("express");
 
@@ -23,7 +24,7 @@ Router.route("/friend")
 
 Router.route("/:id")
     .get(authController.protect, userController.getUserById)
-    .patch(authController.protect, userController.updateUser)
+    .patch(authController.protect, singleImageMiddleware, userController.updateUser)
     .delete(authController.protect, userController.deleteUser);
 
 //Export Router ----------------------------------------------->

@@ -1,5 +1,6 @@
 //imports ----------------------------------------------------->
 const UserModel = require("../models/userModel");
+const { uploadCloudinary } = require("../utils/cloudinary");
 
 //Exports ---------------------------------------------------->
 exports.getUsers = async (req, res) => {
@@ -41,6 +42,17 @@ exports.getUserById = async (req, res) => {
 //------------------------------------------------------------>
 exports.updateUser = async (req, res) => {
     try {
+        //if a file is uploaded, upload it to cloudinary
+        if (req.file) {
+            const result = await uploadCloudinary(req.file);
+            return res.status(200).json({
+                status: "success",
+                data: {
+                    result,
+                },
+            });
+        }
+
         const user = await UserModel.findByIdAndUpdate(req.params.id, req.body, {
             new: true,
             runValidators: true,

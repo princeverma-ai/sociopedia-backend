@@ -37,6 +37,8 @@ const userSchema = new mongoose.Schema({
     ],
 });
 
+
+
 //Password encryption ------------------------------------------>
 userSchema.pre("save", async function (next) {
     //Only run this function if password was actually modified
@@ -64,3 +66,17 @@ const User = mongoose.model("User", userSchema);
 
 //Export User model ------------------------------------------->
 module.exports = User;
+
+// {
+//     new likes:[{
+//         postid: "postid",
+//         likes: [userid, userid, userid]
+//     },
+//     {   
+//         postid: "postid",
+//         likes: [userid, userid, userid]
+//     }]
+    
+// }
+
+
