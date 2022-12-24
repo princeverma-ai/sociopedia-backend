@@ -45,12 +45,7 @@ exports.updateUser = async (req, res) => {
         //if a file is uploaded, upload it to cloudinary
         if (req.file) {
             const result = await uploadCloudinary(req.file);
-            return res.status(200).json({
-                status: "success",
-                data: {
-                    result,
-                },
-            });
+            req.body.photo = result.secure_url;
         }
 
         const user = await UserModel.findByIdAndUpdate(req.params.id, req.body, {

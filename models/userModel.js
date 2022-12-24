@@ -7,6 +7,7 @@ const userSchema = new mongoose.Schema({
     name: {
         type: String,
         required: [true, "Please enter your name"],
+        trim: true,
     },
     email: {
         type: String,
@@ -35,9 +36,13 @@ const userSchema = new mongoose.Schema({
             ref: "User",
         },
     ],
+    posts: [
+        {
+            type: mongoose.Schema.ObjectId,
+            ref: "Post",
+        },
+    ],
 });
-
-
 
 //Password encryption ------------------------------------------>
 userSchema.pre("save", async function (next) {
@@ -72,11 +77,9 @@ module.exports = User;
 //         postid: "postid",
 //         likes: [userid, userid, userid]
 //     },
-//     {   
+//     {
 //         postid: "postid",
 //         likes: [userid, userid, userid]
 //     }]
-    
+
 // }
-
-
