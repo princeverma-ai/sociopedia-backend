@@ -1,6 +1,6 @@
 //imports ----------------------------------------------------->
 const UserModel = require("../models/userModel");
-const { uploadCloudinary } = require("../utils/cloudinary");
+const imgHandler = require("../utils/imgHandler");
 
 //Exports ---------------------------------------------------->
 exports.getUsers = async (req, res) => {
@@ -44,8 +44,20 @@ exports.updateUser = async (req, res) => {
     try {
         //if a file is uploaded, upload it to cloudinary
         if (req.file) {
-            const result = await uploadCloudinary(req.file);
-            req.body.photo = result.secure_url;
+            //get user
+            const user = await UserModel.findById(req.params.id);
+
+            let result;
+
+            //if no image present
+            if (user.photo.id) {
+                //replace image
+                result = await imgHandler.replaceImage(req.file, user.photo.id);
+            } else {
+                //add image
+                result = await imgHandler.addImage(req.file);
+            }
+            req.body.photo = { id: result._id, url: result.secure_url };
         }
 
         const user = await UserModel.findByIdAndUpdate(req.params.id, req.body, {
@@ -69,6 +81,13 @@ exports.updateUser = async (req, res) => {
 //------------------------------------------------------------>
 exports.deleteUser = async (req, res) => {
     try {
+        //get user
+        const user = await UserModel.findById(req.params.id);
+
+        //delete image
+        await imgHandler.deleteImage(user.photo.id);
+
+        //delete user
         await UserModel.findByIdAndDelete(req.params.id);
         res.status(204).json({
             status: "success",

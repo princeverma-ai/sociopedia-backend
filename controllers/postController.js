@@ -1,6 +1,7 @@
 //imports ----------------------------------------------------->
 const PostModel = require("../models/postModel");
 const UserModel = require("../models/userModel");
+const imageHandler = require("../utils/imgHandler");
 
 //Exports ---------------------------------------------------->
 exports.getUserPost = async (req, res) => {
@@ -28,6 +29,12 @@ exports.createUserPost = async (req, res) => {
     try {
         //setting user id to the post
         req.body.user = req.user.id;
+
+        //if there is image in the request
+        if (req.file) {
+            const result = await imageHandler.addImage(req.file);
+            req.body.photo = { id: result._id, url: result.secure_url };
+        }
 
         const post = await PostModel.create(req.body);
         await UserModel.findByIdAndUpdate(
@@ -77,6 +84,16 @@ exports.getPostById = async (req, res) => {
 //------------------------------------------------------------>
 exports.updatePost = async (req, res) => {
     try {
+        //if there is image in the request
+        if (req.file) {
+            //finding the post
+            const post = await PostModel.findById(req.params.id);
+
+            //replacing old image with new image
+            const result = await imageHandler.replaceImage(req.file, post.photo.id);
+
+            req.body.photo = { id: result._id, url: result.secure_url };
+        }
         const post = await PostModel.findByIdAndUpdate(req.params.id, req.body, {
             new: true,
         });
@@ -97,7 +114,15 @@ exports.updatePost = async (req, res) => {
 //------------------------------------------------------------>
 exports.deletePost = async (req, res) => {
     try {
+        //finding the post
+        const post = await PostModel.findById(req.params.id);
+
+        //deleting the image
+        await imageHandler.deleteImage(post.photo.id);
+
+        //deleting the post
         await PostModel.findByIdAndDelete(req.params.id);
+
         await UserModel.findByIdAndUpdate(
             req.user.id,
             {

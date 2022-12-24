@@ -8,7 +8,11 @@ const postSchema = new mongoose.Schema({
         trim: true,
     },
     photo: {
-        type: String,
+        type: Object,
+        default: {
+            id: null,
+            url: null,
+        },
     },
     createdAt: {
         type: Date,

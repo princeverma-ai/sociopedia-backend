@@ -20,7 +20,11 @@ const userSchema = new mongoose.Schema({
         select: false,
     },
     photo: {
-        type: String,
+        type: Object,
+        default: {
+            id: null,
+            url: null,
+        },
     },
     bio: {
         type: String,
