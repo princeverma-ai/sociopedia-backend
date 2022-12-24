@@ -16,5 +16,8 @@ Router.route("/:id")
     .patch(authController.protect, singleImageMiddleware, postController.updatePost)
     .delete(authController.protect, postController.deletePost);
 
+Router.route("/:id/like").patch(authController.protect, postController.likePost);
+Router.route("/:id/comment").post(authController.protect, postController.commentPost);
+
 //Export Router ----------------------------------------------->
 module.exports = Router;

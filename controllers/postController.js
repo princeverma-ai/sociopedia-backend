@@ -2,6 +2,7 @@
 const PostModel = require("../models/postModel");
 const UserModel = require("../models/userModel");
 const imageHandler = require("../utils/imgHandler");
+const commentController = require("./commentController");
 
 //Exports ---------------------------------------------------->
 exports.getUserPost = async (req, res) => {
@@ -63,10 +64,24 @@ exports.createUserPost = async (req, res) => {
 //------------------------------------------------------------>
 exports.getPostById = async (req, res) => {
     try {
-        const post = await PostModel.findById(req.params.id).populate({
-            path: "user",
-            select: "name email photo",
-        });
+        const post = await PostModel.findById(req.params.id)
+            .populate({
+                path: "user",
+                select: "name email photo",
+            })
+            .populate({
+                path: "comments",
+                populate: {
+                    path: "user",
+                    select: "name email photo",
+                },
+                select: "name email photo",
+            })
+            .populate({
+                path: "likes",
+                select: "name email photo",
+            });
+
         res.status(200).json({
             status: "success",
             data: {
@@ -136,6 +151,75 @@ exports.deletePost = async (req, res) => {
         res.status(204).json({
             status: "success",
             data: null,
+        });
+    } catch (error) {
+        res.status(400).json({
+            status: "fail",
+            message: error,
+        });
+    }
+};
+
+//------------------------------------------------------------>
+exports.likePost = async (req, res) => {
+    try {
+        const post = await PostModel.findById(req.params.id);
+        const isLiked = post.likes.includes(req.user.id);
+        if (isLiked) {
+            await PostModel.findByIdAndUpdate(
+                req.params.id,
+                {
+                    $pull: { likes: req.user.id },
+                },
+                {
+                    new: true,
+                }
+            );
+        } else {
+            await PostModel.findByIdAndUpdate(
+                req.params.id,
+                {
+                    $push: { likes: req.user.id },
+                },
+                {
+                    new: true,
+                }
+            );
+        }
+        res.status(200).json({
+            status: "success",
+            data: null,
+        });
+    } catch (error) {
+        res.status(400).json({
+            status: "fail",
+            message: error,
+        });
+    }
+};
+
+//------------------------------------------------------------>
+exports.commentPost = async (req, res) => {
+    try {
+        //create comment
+        const comment = await commentController.createComment(req);
+
+        //add comment to post
+        await PostModel.findByIdAndUpdate(
+            req.params.id,
+            {
+                $push: { comments: comment._id },
+            },
+            {
+                new: true,
+            }
+        );
+
+        res.status(201).json({
+            status: "success",
+            data: {
+                comment,
+            },
         });
     } catch (error) {
         res.status(400).json({
