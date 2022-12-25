@@ -3,6 +3,7 @@ const PostModel = require("../models/postModel");
 const UserModel = require("../models/userModel");
 const imageHandler = require("../utils/imgHandler");
 const commentController = require("./commentController");
+const homeController = require("./homeController");
 
 //Exports ---------------------------------------------------->
 exports.getUserPost = async (req, res) => {
@@ -176,7 +177,7 @@ exports.likePost = async (req, res) => {
                 }
             );
         } else {
-            await PostModel.findByIdAndUpdate(
+            const post = await PostModel.findByIdAndUpdate(
                 req.params.id,
                 {
                     $push: { likes: req.user.id },
@@ -185,6 +186,7 @@ exports.likePost = async (req, res) => {
                     new: true,
                 }
             );
+            homeController.updateNotifications(req.user.id, req.params.id, post.user, true, false);
         }
         res.status(200).json({
             status: "success",
@@ -205,7 +207,7 @@ exports.commentPost = async (req, res) => {
         const comment = await commentController.createComment(req);
 
         //add comment to post
-        await PostModel.findByIdAndUpdate(
+        const post = await PostModel.findByIdAndUpdate(
             req.params.id,
             {
                 $push: { comments: comment._id },
@@ -213,6 +215,14 @@ exports.commentPost = async (req, res) => {
             {
                 new: true,
             }
+        );
+
+        homeController.updateNotifications(
+            req.user.id,
+            req.params.id,
+            post.user,
+            false,
+            req.body.text
         );
 
         res.status(201).json({

@@ -46,6 +46,23 @@ const userSchema = new mongoose.Schema({
             ref: "Post",
         },
     ],
+    notifications: {
+        type: Object,
+        default: {
+            newLikes: [
+                {
+                    postid: null,
+                    likerID: null,
+                },
+            ],
+            newComments: [
+                {
+                    postid: null,
+                    comment: { commenterID: null, comment: null },
+                },
+            ],
+        },
+    },
 });
 
 //Password encryption ------------------------------------------>
@@ -66,7 +83,7 @@ userSchema.methods.checkPassword = async function (candidatePassword, userPasswo
 
 //selecting fields to be returned ------------------------------>
 userSchema.pre(/^find/, function (next) {
-    this.select("-__v ");
+    this.select("-__v -notifications");
     next();
 });
 

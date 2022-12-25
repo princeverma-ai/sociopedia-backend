@@ -25,6 +25,10 @@ Router.route("/friend")
 
 Router.route("/home").get(authController.protect, homeController.feed);
 
+Router.route("/notifications")
+    .get(authController.protect, homeController.getNotifications)
+    .patch(authController.protect, homeController.clearNotifications);
+
 Router.route("/:id")
     .get(authController.protect, userController.getUserById)
     .patch(authController.protect, singleImageMiddleware, userController.updateUser)
