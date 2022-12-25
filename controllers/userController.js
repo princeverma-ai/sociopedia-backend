@@ -1,14 +1,21 @@
 //imports ----------------------------------------------------->
 const UserModel = require("../models/userModel");
 const imgHandler = require("../utils/imgHandler");
+const APIFeatures = require("../utils/apiFeatures");
 
 //Exports ---------------------------------------------------->
 exports.getUsers = async (req, res) => {
     try {
-        const users = await UserModel.find();
+        //query
+        const features = new APIFeatures(UserModel.find(), req.query).paginate();
+
+        //execute query
+        const users = await features.query;
+
         res.status(200).json({
             status: "success",
             results: users.length,
+            page: req.query.page,
             data: {
                 users,
             },
