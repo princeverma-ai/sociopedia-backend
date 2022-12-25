@@ -2,6 +2,7 @@
 const authController = require("../controllers/authController");
 const userController = require("../controllers/userController");
 const friendController = require("../controllers/friendController");
+const homeController = require("../controllers/homeController");
 const singleImageMiddleware = require("../utils/uploadMulter");
 
 const express = require("express");
@@ -21,6 +22,8 @@ Router.route("/friend")
     .get(authController.protect, friendController.getFriends)
     .post(authController.protect, friendController.addFriend)
     .patch(authController.protect, friendController.removeFriend);
+
+Router.route("/home").get(authController.protect, homeController.feed);
 
 Router.route("/:id")
     .get(authController.protect, userController.getUserById)

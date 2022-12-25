@@ -6,6 +6,7 @@ const cors = require("cors");
 const authRouter = require("./routes/authRouter");
 const userRouter = require("./routes/userRouter");
 const postRouter = require("./routes/postRouter");
+const searchRouter = require("./routes/searchRouter");
 
 //initialize app ---------------------------------------------->
 const app = express();
@@ -18,6 +19,7 @@ app.use(cors());
 app.use("/auth", authRouter);
 app.use("/user", userRouter);
 app.use("/post", postRouter);
+app.use("/search", searchRouter);
 
 //Export app -------------------------------------------------->
 module.exports = app;

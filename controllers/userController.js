@@ -14,7 +14,7 @@ exports.getUsers = async (req, res) => {
 
         res.status(200).json({
             status: "success",
-            results: users.length,
+            resultsInThisPage: users.length,
             page: req.query.page,
             data: {
                 users,
