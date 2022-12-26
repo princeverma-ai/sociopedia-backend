@@ -38,8 +38,11 @@ const deleteImageFromDB = async (id) => {
 //------------------------------------------------------------>
 exports.addImage = async (file) => {
     try {
+        console.log("file path from addImage", file.path);
         //try to upload file to cloudinary
         const result = await uploadCloudinary(file);
+
+        console.log("image added result from cloudinary", result);
 
         //if upload is successful add image data to db
         const img = await addImageDataToDB(file, result);
