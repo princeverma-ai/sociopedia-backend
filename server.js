@@ -10,7 +10,7 @@ dotenv.config({ path: "./config.env" });
 //database -------------------------------------------->
 mongoose.set("strictQuery", false);
 mongoose
-    .connect(process.env.DB_URL, {
+    .connect(process.env.DB_URL_CLOUD, {
         useNewUrlParser: true,
     })
     .then(() => {
