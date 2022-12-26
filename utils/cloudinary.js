@@ -10,10 +10,8 @@ cloudinary.config({
     api_key: "412197463159899",
     api_secret: "967t8Vt6h8cDbKhEi9PQvlaXuws",
 });
-console.log("Cloudinary config loaded");
 //del file local--------------------------------------------->
 const delFileLocal = (file) => {
-    console.log(`Deleting file ${file.filename} from local storage`);
     fs.unlink(path.join(__dirname, "..", "tmp", file.filename), (err) => {
         if (err) {
             throw new Error(`Could not delete file : ${err}`);
@@ -24,13 +22,10 @@ const delFileLocal = (file) => {
 //Upload ---------------------------------------------------->
 const uploadCloudinary = async (file) => {
     try {
-        console.log("file upload started");
-        console.log("file upload from path:", path.join(__dirname, "..", "tmp", file.filename));
         //upload file to cloudinary
         const result = await cloudinary.uploader.upload(
             path.join(__dirname, "..", "tmp", file.filename)
         );
-        console.log("file upload completed");
 
         //delete file after uploading
         delFileLocal(file);

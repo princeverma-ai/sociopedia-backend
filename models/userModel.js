@@ -49,18 +49,8 @@ const userSchema = new mongoose.Schema({
     notifications: {
         type: Object,
         default: {
-            newLikes: [
-                {
-                    postid: null,
-                    likerID: null,
-                },
-            ],
-            newComments: [
-                {
-                    postid: null,
-                    comment: { commenterID: null, comment: null },
-                },
-            ],
+            newLikes: [],
+            newComments: [],
         },
     },
 });
