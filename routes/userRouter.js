@@ -4,6 +4,7 @@ const userController = require("../controllers/userController");
 const friendController = require("../controllers/friendController");
 const homeController = require("../controllers/homeController");
 const singleImageMiddleware = require("../utils/uploadMulter");
+const onlineUserController = require("../controllers/onlineUserController");
 
 const express = require("express");
 
@@ -28,6 +29,8 @@ Router.route("/home").get(authController.protect, homeController.feed);
 Router.route("/notifications")
     .get(authController.protect, homeController.getNotifications)
     .patch(authController.protect, homeController.clearNotifications);
+
+Router.route("/onlineUsers").get(authController.protect, onlineUserController.getOnlineUsers);
 
 Router.route("/:id")
     .get(authController.protect, userController.getUserById)

@@ -4,6 +4,8 @@ const UserModel = require("../models/userModel");
 const imageHandler = require("../utils/imgHandler");
 const commentController = require("./commentController");
 const homeController = require("./homeController");
+const onlineUserController = require("./onlineUserController");
+const { notificationEmitter } = require("../utils/eventManagment");
 
 //Exports ---------------------------------------------------->
 exports.getUserPost = async (req, res) => {
@@ -161,36 +163,64 @@ exports.deletePost = async (req, res) => {
     }
 };
 
+const addLikeToPost = async (isLiked, postID, likerID) => {
+    if (isLiked) {
+        await PostModel.findByIdAndUpdate(
+            postID,
+            {
+                $pull: { likes: likerID },
+            },
+            {
+                new: true,
+            }
+        );
+    } else {
+        await PostModel.findByIdAndUpdate(
+            postID,
+            {
+                $push: { likes: likerID },
+            },
+            {
+                new: true,
+            }
+        );
+    }
+};
+
 //------------------------------------------------------------>
 exports.likePost = async (req, res) => {
     try {
         const post = await PostModel.findById(req.params.id);
         const isLiked = post.likes.includes(req.user.id);
-        if (isLiked) {
-            await PostModel.findByIdAndUpdate(
-                req.params.id,
-                {
-                    $pull: { likes: req.user.id },
-                },
-                {
-                    new: true,
-                }
-            );
+
+        //check if user is online
+        const onlineUser = await onlineUserController.checkOnline(post.user);
+
+        if (onlineUser && !isLiked) {
+            addLikeToPost(isLiked, req.params.id, req.user.id);
+            console.log("like emitted");
+            notificationEmitter.emit(`${onlineUser.socketID}`, {
+                postId: req.params.id,
+                like: true,
+                comment: false,
+                userWhoLiked: req.user.id,
+                socketID: onlineUser.socketID,
+            });
         } else {
-            const post = await PostModel.findByIdAndUpdate(
-                req.params.id,
-                {
-                    $push: { likes: req.user.id },
-                },
-                {
-                    new: true,
-                }
-            );
-            homeController.updateNotifications(req.user.id, req.params.id, post.user, true, false);
+            addLikeToPost(isLiked, req.params.id, req.user.id);
+            !isLiked &&
+                homeController.updateNotifications(
+                    req.user.id,
+                    req.params.id,
+                    post.user,
+                    true,
+                    false
+                );
         }
+
         res.status(200).json({
             status: "success",
-            data: null,
+            liked: !isLiked,
         });
     } catch (error) {
         res.status(400).json({
@@ -217,13 +247,28 @@ exports.commentPost = async (req, res) => {
             }
         );
 
-        homeController.updateNotifications(
-            req.user.id,
-            req.params.id,
-            post.user,
-            false,
-            req.body.text
-        );
+        //check if user is online
+        const onlineUser = await onlineUserController.checkOnline(post.user);
+
+        if (onlineUser) {
+            console.log("comment emitted");
+
+            notificationEmitter.emit(`${onlineUser.socketID}`, {
+                postId: req.params.id,
+                like: false,
+                comment: req.body.text,
+                userWhoCommented: req.user.id,
+                socketID: onlineUser.socketID,
+            });
+        } else {
+            homeController.updateNotifications(
+                req.user.id,
+                req.params.id,
+                post.user,
+                false,
+                req.body.text
+            );
+        }
 
         res.status(201).json({
             status: "success",
