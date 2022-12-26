@@ -1,16 +1,14 @@
 //imports ----------------------------------------------------->
 const cloudinary = require("cloudinary").v2;
 const fs = require("fs");
-const dotenv = require("dotenv");
 const path = require("path");
 
 //config ------------------------------------------------------>
-dotenv.config({ path: "./config.env" });
 
 cloudinary.config({
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-    api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET,
+    cloud_name: "dr4ej5xfu",
+    api_key: "412197463159899",
+    api_secret: "967t8Vt6h8cDbKhEi9PQvlaXuws",
 });
 console.log("Cloudinary config loaded");
 //del file local--------------------------------------------->
