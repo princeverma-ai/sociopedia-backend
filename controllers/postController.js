@@ -222,7 +222,6 @@ exports.likePost = async (req, res) => {
 
         if (onlineUser && !isLiked) {
             addLikeToPost(isLiked, req.params.id, req.user.id);
-            console.log("like emitted");
             notificationEmitter.emit(`${onlineUser.socketID}`, {
                 postId: req.params.id,
                 like: true,

@@ -31,7 +31,10 @@ exports.getUsers = async (req, res) => {
 //------------------------------------------------------------>
 exports.getUserById = async (req, res) => {
     try {
-        const user = await UserModel.findById(req.params.id);
+        const user = await UserModel.findById(req.params.id).populate({
+            path: "posts",
+        });
+
         res.status(200).json({
             status: "success",
             data: {
@@ -65,6 +68,18 @@ exports.updateUser = async (req, res) => {
                 result = await imgHandler.addImage(req.file);
             }
             req.body.photo = { id: result._id, url: result.secure_url };
+        }
+
+        //if photo delete request
+        if (req.body.removePhoto) {
+            //get user
+            const user = await UserModel.findById(req.params.id);
+
+            //delete image
+            await imgHandler.deleteImage(user.photo.id);
+
+            //remove photo from user
+            req.body.photo = undefined;
         }
 
         const user = await UserModel.findByIdAndUpdate(req.params.id, req.body, {
