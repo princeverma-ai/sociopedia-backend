@@ -11,6 +11,8 @@ Router.route("/")
     .get(authController.protect, postController.getUserPost)
     .post(authController.protect, singleImageMiddleware, postController.createUserPost);
 
+Router.route("/getLikedPosts").get(authController.protect, postController.getLikedPosts);
+
 Router.route("/:id")
     .get(authController.protect, postController.getPostById)
     .patch(authController.protect, singleImageMiddleware, postController.updatePost)

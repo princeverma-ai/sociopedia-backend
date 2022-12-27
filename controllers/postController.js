@@ -163,6 +163,30 @@ exports.deletePost = async (req, res) => {
     }
 };
 
+//------------------------------------------------------------>
+exports.getLikedPosts = async (req, res) => {
+    try {
+        const userID = req.user.id;
+        const posts = await PostModel.find({ likes: userID }).populate({
+            path: "user",
+            select: "name email photo",
+        });
+
+        res.status(200).json({
+            status: "success",
+            data: {
+                posts,
+            },
+        });
+    } catch (error) {
+        res.status(400).json({
+            status: "fail",
+            message: error,
+        });
+    }
+};
+
+//------------------------------------------------------------>
 const addLikeToPost = async (isLiked, postID, likerID) => {
     if (isLiked) {
         await PostModel.findByIdAndUpdate(
