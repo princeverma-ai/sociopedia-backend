@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 const app = require("./app");
 const sockerHandler = require("./socketHandler");
 
-//config ---------------------------------------------->
+//config  settings------------------------------------------->
 dotenv.config({ path: "./config.env" });
 
 //database -------------------------------------------->
