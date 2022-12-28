@@ -33,6 +33,7 @@ exports.getUserById = async (req, res) => {
     try {
         const user = await UserModel.findById(req.params.id).populate({
             path: "posts",
+            select: "photo _id",
         });
 
         res.status(200).json({

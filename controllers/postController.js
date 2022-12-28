@@ -76,9 +76,9 @@ exports.getPostById = async (req, res) => {
                 path: "comments",
                 populate: {
                     path: "user",
-                    select: "name email photo",
+                    select: "name  photo",
                 },
-                select: "name email photo",
+                select: "user text createdAt",
             })
             .populate({
                 path: "likes",
