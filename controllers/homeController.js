@@ -14,7 +14,16 @@ exports.feed = async (req, res) => {
         const features = new APIFeatures(
             PostModel.find({
                 user: { $in: user.friends },
-            }).populate("user", "name photo"),
+            })
+                .populate("user", "name photo")
+                .populate({
+                    path: "comments",
+                    populate: {
+                        path: "user",
+                        select: "name photo",
+                    },
+                    select: "user text",
+                }),
             req.query
         )
             .paginate()
@@ -33,6 +42,7 @@ exports.feed = async (req, res) => {
             },
         });
     } catch (error) {
+        console.log("error", error);
         res.status(400).json({
             status: "fail",
             message: error,
