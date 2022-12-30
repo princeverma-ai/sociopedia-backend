@@ -12,10 +12,6 @@ class APIFeatures {
         this.query = this.query.skip(skip).limit(limit);
         return this;
     }
-    sort() {
-        this.query = this.query.sort("-createdAt");
-        return this;
-    }
 }
 
 //export class---------------------------------------------------->

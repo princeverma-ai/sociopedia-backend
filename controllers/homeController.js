@@ -25,9 +25,7 @@ exports.feed = async (req, res) => {
                     select: "user text",
                 }),
             req.query
-        )
-            .paginate()
-            .sort();
+        ).paginate();
 
         //execute query
         const posts = await features.query;

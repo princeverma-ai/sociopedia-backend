@@ -6,10 +6,10 @@ const PostModel = require("../models/postModel");
 exports.explore = async (req, res) => {
     try {
         //query
-        const features = new APIFeatures(PostModel.find(), req.query).paginate().sort();
+        const features = new APIFeatures(PostModel.find(), req.query).paginate();
 
         //execute query
-        const images = await features.query.select("photo _id");
+        const images = await features.query.select("photo _id text");
 
         res.status(200).json({
             status: "success",
