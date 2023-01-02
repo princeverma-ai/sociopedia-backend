@@ -229,7 +229,6 @@ exports.likePost = async (req, res) => {
         const onlineUser = await onlineUserController.checkOnline(post.user);
 
         if (onlineUser && !isLiked) {
-            addLikeToPost(isLiked, req.params.id, req.user.id);
             notificationEmitter.emit(`${onlineUser.socketID}`, {
                 postId: req.params.id,
                 like: true,
@@ -237,17 +236,10 @@ exports.likePost = async (req, res) => {
                 userWhoLiked: req.user.id,
                 socketID: onlineUser.socketID,
             });
-        } else {
-            addLikeToPost(isLiked, req.params.id, req.user.id);
-            !isLiked &&
-                homeController.updateNotifications(
-                    req.user.id,
-                    req.params.id,
-                    post.user,
-                    true,
-                    false
-                );
         }
+        addLikeToPost(isLiked, req.params.id, req.user.id);
+        !isLiked &&
+            homeController.updateNotifications(req.user.id, req.params.id, post.user, true, false);
 
         res.status(200).json({
             status: "success",
@@ -289,15 +281,14 @@ exports.commentPost = async (req, res) => {
                 userWhoCommented: req.user.id,
                 socketID: onlineUser.socketID,
             });
-        } else {
-            homeController.updateNotifications(
-                req.user.id,
-                req.params.id,
-                post.user,
-                false,
-                req.body.text
-            );
         }
+        homeController.updateNotifications(
+            req.user.id,
+            req.params.id,
+            post.user,
+            false,
+            req.body.text
+        );
 
         res.status(201).json({
             status: "success",

@@ -88,8 +88,10 @@ exports.updateNotifications = async (
                     $push: {
                         "notifications.newLikes": {
                             postid: postID,
-                            likerName: liker.name,
-                            likerPhoto: liker.photo,
+                            liker: {
+                                likerName: liker.name,
+                                likerPhoto: liker.photo,
+                            },
                         },
                     },
                 },
@@ -105,8 +107,8 @@ exports.updateNotifications = async (
                     $push: {
                         "notifications.newComments": {
                             postid: postID,
-                            comment: {
-                                commenterName: commenter,
+                            commenter: {
+                                commenterName: commenter.name,
                                 comment: comment,
                                 commenterPhoto: commenter.photo,
                             },
