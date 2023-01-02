@@ -37,6 +37,12 @@ exports.createUserPost = async (req, res) => {
         //if there is image in the request
         if (req.file) {
             const result = await imageHandler.addImage(req.file);
+            if (!result.public_id) {
+                return res.status(400).json({
+                    status: "fail",
+                    message: "error: image not uploaded",
+                });
+            }
             req.body.photo = { id: result._id, url: result.secure_url };
         }
 
@@ -105,6 +111,12 @@ exports.updatePost = async (req, res) => {
 
             //replacing old image with new image
             const result = await imageHandler.replaceImage(req.file, post.photo.id);
+            if (!result.public_id) {
+                return res.status(400).json({
+                    status: "fail",
+                    message: "error: image not uploaded",
+                });
+            }
 
             req.body.photo = { id: result._id, url: result.secure_url };
         }

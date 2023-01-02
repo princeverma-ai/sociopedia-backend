@@ -53,6 +53,14 @@ exports.getUserById = async (req, res) => {
 //------------------------------------------------------------>
 exports.updateUser = async (req, res) => {
     try {
+        //if image tag is sent but not image file
+        if (req.body.img && !req.file) {
+            return res.status(400).json({
+                status: "fail",
+                message: "error: image tag sent but no image file",
+            });
+        }
+
         //if a file is uploaded, upload it to cloudinary
         if (req.file) {
             //get user
@@ -68,6 +76,13 @@ exports.updateUser = async (req, res) => {
                 //add image
                 result = await imgHandler.addImage(req.file);
             }
+            if (!result.public_id) {
+                return res.status(400).json({
+                    status: "fail",
+                    message: "error: image not uploaded",
+                });
+            }
+            console.log("result", result);
             req.body.photo = { id: result._id, url: result.secure_url };
         }
 
