@@ -29,7 +29,7 @@ exports.initializeSocketServer = (server) => {
             }
 
             if (data.comment) {
-                UserModel.findById(data.userWhoLiked)
+                UserModel.findById(data.userWhoCommented)
                     .select("name")
                     .then((user) => {
                         io.to(data.socketID).emit("notification", {

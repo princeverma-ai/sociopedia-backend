@@ -282,8 +282,6 @@ exports.commentPost = async (req, res) => {
         const onlineUser = await onlineUserController.checkOnline(post.user);
 
         if (onlineUser) {
-            console.log("comment emitted");
-
             notificationEmitter.emit(`${onlineUser.socketID}`, {
                 postId: req.params.id,
                 like: false,
