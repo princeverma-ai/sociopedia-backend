@@ -26,25 +26,27 @@ exports.initializeSocketServer = (server) => {
         notificationEmitter.on(`${socket.id}`, (data) => {
             if (data.like) {
                 UserModel.findById(data.userWhoLiked)
-                    .select("name")
+                    .select("name photo")
                     .then((user) => {
                         io.to(data.socketID).emit("notification", {
                             userName: user.name,
                             postId: data.postId,
                             isLiked: true,
+                            userPhoto: user.photo,
                         });
                     });
             }
 
             if (data.comment) {
                 UserModel.findById(data.userWhoCommented)
-                    .select("name")
+                    .select("name photo")
                     .then((user) => {
                         io.to(data.socketID).emit("notification", {
                             userName: user.name,
                             postId: data.postId,
                             isLiked: false,
                             comment: data.comment,
+                            userPhoto: user.photo,
                         });
                     });
             }

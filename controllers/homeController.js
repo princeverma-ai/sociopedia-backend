@@ -80,13 +80,16 @@ exports.updateNotifications = async (
     try {
         //updating the notifications
         if (like) {
+            //get liker name
+            const liker = await UserModel.findById(currentUserID).select("name photo");
             await UserModel.findByIdAndUpdate(
                 userID,
                 {
                     $push: {
                         "notifications.newLikes": {
                             postid: postID,
-                            likerID: currentUserID,
+                            likerName: liker.name,
+                            likerPhoto: liker.photo,
                         },
                     },
                 },
@@ -94,13 +97,19 @@ exports.updateNotifications = async (
             );
         }
         if (comment) {
+            //get commenter name
+            const commenter = await UserModel.findById(currentUserID).select("name photo");
             await UserModel.findByIdAndUpdate(
                 userID,
                 {
                     $push: {
                         "notifications.newComments": {
                             postid: postID,
-                            comment: { commenterID: currentUserID, comment: comment },
+                            comment: {
+                                commenterName: commenter,
+                                comment: comment,
+                                commenterPhoto: commenter.photo,
+                            },
                         },
                     },
                 },
