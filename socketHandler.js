@@ -24,6 +24,7 @@ exports.initializeSocketServer = (server) => {
 
         //notification handler
         notificationEmitter.on(`${socket.id}`, (data) => {
+            //like notification
             if (data.like) {
                 UserModel.findById(data.userWhoLiked)
                     .select("name photo")
@@ -37,6 +38,7 @@ exports.initializeSocketServer = (server) => {
                     });
             }
 
+            //comment notification
             if (data.comment) {
                 UserModel.findById(data.userWhoCommented)
                     .select("name photo")
