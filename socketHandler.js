@@ -11,7 +11,15 @@ exports.initializeSocketServer = (server) => {
     io.on("connection", (socket) => {
         //connect handler
         socket.on("userID", async (userID) => {
-            await onlineUserController.makeOnline(userID, socket.id);
+            //check if user is already online
+            const isOnline = await onlineUserController.checkOnline(userID);
+            if (isOnline) {
+                //if user is online, update the socket id
+                await onlineUserController.makeOffline(isOnline.socketID);
+                await onlineUserController.makeOnline(userID, socket.id);
+            } else {
+                await onlineUserController.makeOnline(userID, socket.id);
+            }
         });
 
         //notification handler
