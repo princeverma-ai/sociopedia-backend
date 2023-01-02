@@ -2,6 +2,7 @@
 const { Server: socketServer } = require("socket.io");
 const onlineUserController = require("./controllers/onlineUserController");
 const { notificationEmitter } = require("./utils/eventManagment");
+const UserModel = require("./models/userModel");
 
 //Exports the socket server to be used in the server.js file
 exports.initializeSocketServer = (server) => {
@@ -16,17 +17,28 @@ exports.initializeSocketServer = (server) => {
         //notification handler
         notificationEmitter.on(`${socket.id}`, (data) => {
             if (data.like) {
-                console.log("like notification");
-                io.to(data.socketID).emit("notification", {
-                    message: `User ${data.userWhoLiked} liked your post ${data.postId}`,
-                });
+                UserModel.findById(data.userWhoLiked)
+                    .select("name")
+                    .then((user) => {
+                        io.to(data.socketID).emit("notification", {
+                            userName: user.name,
+                            postId: data.postId,
+                            isLiked: true,
+                        });
+                    });
             }
-            if (data.comment) {
-                console.log("comment notification");
 
-                io.to(data.socketID).emit("notification", {
-                    message: `User ${data.userWhoCommented} commented on your post ${data.postId} with the comment ${data.comment}`,
-                });
+            if (data.comment) {
+                UserModel.findById(data.userWhoLiked)
+                    .select("name")
+                    .then((user) => {
+                        io.to(data.socketID).emit("notification", {
+                            userName: user.name,
+                            postId: data.postId,
+                            isLiked: false,
+                            comment: data.comment,
+                        });
+                    });
             }
         });
 
