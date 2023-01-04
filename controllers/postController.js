@@ -61,6 +61,7 @@ exports.createUserPost = async (req, res) => {
             status: "success",
             data: {
                 post,
+                userWhoAddedPost: req.user,
             },
         });
     } catch (error) {

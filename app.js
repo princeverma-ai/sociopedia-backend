@@ -1,6 +1,7 @@
 //imports ----------------------------------------------------->
 const express = require("express");
 const cors = require("cors");
+const compression = require("compression");
 
 //routes imports ---------------------------------------------->
 const authRouter = require("./routes/authRouter");
@@ -14,6 +15,7 @@ const app = express();
 
 //middleware -------------------------------------------------->
 app.use(express.json());
+app.use(compression());
 app.use(
     cors({
         origin: "*",
