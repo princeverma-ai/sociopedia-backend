@@ -46,7 +46,9 @@ exports.createUserPost = async (req, res) => {
             req.body.photo = { id: result._id, url: result.secure_url };
         }
 
-        const post = await PostModel.create(req.body);
+        const post = await (await PostModel.create(req.body)).populate({
+            path: "user",
+        });
         await UserModel.findByIdAndUpdate(
             req.user.id,
             {
@@ -60,8 +62,7 @@ exports.createUserPost = async (req, res) => {
         res.status(201).json({
             status: "success",
             data: {
-                post,
-                userWhoAddedPost: req.user,
+                post
             },
         });
     } catch (error) {
