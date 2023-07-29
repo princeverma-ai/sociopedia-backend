@@ -17,10 +17,20 @@ const app = express();
 app.use(express.json());
 app.use(compression());
 app.use(
-    cors({
-        origin: "*",
-    })
+  cors({
+    origin: "*",
+  })
 );
+
+app.all("*", (req, res, next) => {
+  //logging in relevant information about the request
+  console.log(
+    `Request received: ${req.method} ${req.protocol}://${req.get("host")}${
+      req.originalUrl
+    }`
+  );
+  next();
+});
 
 //routes ------------------------------------------------------>
 app.use("/auth", authRouter);
